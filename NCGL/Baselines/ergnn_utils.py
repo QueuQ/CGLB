@@ -1,13 +1,6 @@
 import random
-#import numpy as np
 import torch
 import torch.nn as nn
-#from sklearn.metrics import f1_score
-#from sklearn.model_selection import train_test_split
-#from ogb.nodeproppred import DglNodePropPredDataset
-#import dgl
-#import copy
-
 
 class MF_sampler(nn.Module):
     # sampler for ERGNN MF and MF*

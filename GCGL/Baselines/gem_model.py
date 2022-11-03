@@ -144,7 +144,6 @@ class NET(torch.nn.Module):
         # Update ring buffer storing examples from current task
         if task_i >= len(self.memory_data):
             tmask = np.random.choice(list(range(self.data_loader[task_i].batch_size)), min(self.n_memories,self.data_loader[task_i].batch_size), replace=False)
-            #tmask = np.array(tmask)
             self.memory_data.append(np.array(tmask))
 
         # compute gradient on previous tasks
@@ -154,7 +153,6 @@ class NET(torch.nn.Module):
             clss = []
             for tid in range(old_task_i + 1):
                 clss.extend(args['tasks'][tid])
-            #clss = args['tasks'][old_task_i]
             for batch_id, batch_data in enumerate(self.data_loader[old_task_i]): # self.data_loader uses full batch
                 smiles, bg, labels, masks = batch_data
                 bg = bg.to(f"cuda:{args['gpu']}")
@@ -165,18 +163,15 @@ class NET(torch.nn.Module):
                 n_per_cls = [(labels == j).sum() for j in clss]
                 loss_w_ = [1. / max(i, 1) for i in n_per_cls]
                 loss_w_ = torch.tensor(loss_w_).to(device='cuda:{}'.format(args['gpu']))
-                # labels= labels.long()
                 for i, c in enumerate(clss):
                     labels[labels == c] = i
                 old_task_loss = loss_criterion(logits[self.memory_data[old_task_i]][:,clss], labels[self.memory_data[old_task_i]].long(), weight=loss_w_).float()
-                #old_task_loss = loss[:, old_task_i].mean()
 
                 old_task_loss.backward()
                 store_grad(self.net.parameters, self.grads, self.grad_dims,
                            old_task_i)
 
         self.net.train()
-        #train_meter = Meter()
         clss = []
         for tid in range(task_i + 1):
             clss.extend(args['tasks'][tid])
@@ -196,11 +191,9 @@ class NET(torch.nn.Module):
 
             # Mask non-existing labels
             loss = loss_criterion(logits[:, clss], labels.long(), weight=loss_w_).float()
-            #loss = loss[:, task_i].mean()
 
             self.optimizer.zero_grad()
             loss.backward()
-            #self.optimizer.step()
 
             # check if gradient violates constraints
             if len(self.observed_tasks) > 1:
@@ -236,7 +229,6 @@ class NET(torch.nn.Module):
         if task_i >= len(self.memory_data):
             tmask = np.random.choice(list(range(self.data_loader[task_i].batch_size)),
                                      min(self.n_memories, self.data_loader[task_i].batch_size), replace=False)
-            # tmask = np.array(tmask)
             self.memory_data.append(np.array(tmask))
 
         # compute gradient on previous tasks
@@ -259,14 +251,12 @@ class NET(torch.nn.Module):
                     labels[labels == c] = i
 
                 old_task_loss = loss_criterion(logits[self.memory_data[old_task_i]][:, clss], labels[self.memory_data[old_task_i]].long(), weight=loss_w_).float()
-                #old_task_loss = loss[:, old_task_i].mean()
 
                 old_task_loss.backward()
                 store_grad(self.net.parameters, self.grads, self.grad_dims,
                            old_task_i)
 
         self.net.train()
-        #train_meter = Meter()
         clss = args['tasks'][task_i]
         for batch_id, batch_data in enumerate(data_loader[task_i]):
             smiles, bg, labels, masks = batch_data
@@ -288,8 +278,6 @@ class NET(torch.nn.Module):
 
             self.optimizer.zero_grad()
             loss.backward()
-            #self.optimizer.step()
-            #train_meter.update(logits, labels, masks)
 
             # check if gradient violates constraints
             if len(self.observed_tasks) > 1:

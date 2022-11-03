@@ -58,7 +58,7 @@ class NET(torch.nn.Module):
             loss.backward()
             self.optimizer.step()
             train_meter.update(logits, labels, masks)
-        
+
         train_score = np.mean(train_meter.compute_metric(args['metric_name']))
 
     def observe_tskIL_multicls(self, data_loader, loss_criterion, task_i, args):
@@ -71,7 +71,7 @@ class NET(torch.nn.Module):
                         :param args: Same as the args in __init__().
 
                         """
-        # not real cls-IL, just task Il under multi-class setting
+        # task Il under multi-class setting
         self.net.train()
         #train_meter = Meter()
         clss = args['tasks'][task_i]
@@ -84,7 +84,6 @@ class NET(torch.nn.Module):
             n_per_cls = [(labels == j).sum() for j in clss]
             loss_w_ = [1. / max(i, 1) for i in n_per_cls]
             loss_w_ = torch.tensor(loss_w_).to(device='cuda:{}'.format(args['gpu']))
-            # labels= labels.long()
             for i, c in enumerate(clss):
                 labels[labels == c] = i
             loss = loss_criterion(logits[:, clss], labels.long(), weight=loss_w_).float()
@@ -92,7 +91,6 @@ class NET(torch.nn.Module):
             self.optimizer.zero_grad()
             loss.backward()
             self.optimizer.step()
-            #train_meter.update(logits, labels, masks)
 
     def observe_clsIL(self, data_loader, loss_criterion, task_i, args):
         """
@@ -105,11 +103,9 @@ class NET(torch.nn.Module):
 
                                 """
         self.net.train()
-        #train_meter = Meter()
         clss = []
         for tid in range(task_i + 1):
             clss.extend(args['tasks'][tid])
-        #clss = args['tasks'][task_i]
         for batch_id, batch_data in enumerate(data_loader[task_i]):
             smiles, bg, labels, masks = batch_data
             labels, masks = labels.cuda(), masks.cuda()
@@ -119,7 +115,6 @@ class NET(torch.nn.Module):
             n_per_cls = [(labels == j).sum() for j in clss]
             loss_w_ = [1. / max(i, 1) for i in n_per_cls]
             loss_w_ = torch.tensor(loss_w_).to(device='cuda:{}'.format(args['gpu']))
-            # labels= labels.long()
             for i, c in enumerate(clss):
                 labels[labels == c] = i
             loss = loss_criterion(logits[:, clss], labels.long(), weight=loss_w_).float()
@@ -127,4 +122,3 @@ class NET(torch.nn.Module):
             self.optimizer.zero_grad()
             loss.backward()
             self.optimizer.step()
-            #train_meter.update(logits, labels, masks)

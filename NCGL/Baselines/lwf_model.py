@@ -2,7 +2,6 @@ import torch
 import copy
 import os
 from torch.autograd import Variable
-#from Backbones.utils import EarlyStopping, evaluate, accuracy
 import torch.nn.functional as F
 from dgl.nn.pytorch import edge_softmax, GATConv
 import torch.nn as nn

@@ -78,10 +78,6 @@ if __name__ == '__main__':
         if args['dataset'] in ['Aromaticity-CL']:
             args['n_cls_per_task'] = 2
             if args['clsIL']:
-                '''
-                if args['method'] == 'jointtrain':
-                    args['method'] = 'jointreplay'
-                '''
                 subfolder = f"clsIL/{args['frac_train']}/"
             else:
                 subfolder = f'tskIL/{args["frac_train"]}/'

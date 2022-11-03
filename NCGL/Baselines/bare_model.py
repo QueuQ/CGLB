@@ -36,9 +36,6 @@ class NET(torch.nn.Module):
 
         # setup loss
         self.ce = torch.nn.functional.cross_entropy
-        #self.bce = torch.nn.functional.binary_cross_entropy_with_logits
-
-        #self.current_task = 0
 
     def forward(self, features):
         output = self.net(features)

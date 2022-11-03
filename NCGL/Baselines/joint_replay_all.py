@@ -2,7 +2,6 @@ import torch
 import copy
 from .ergnn_utils import *
 
-#samplers = {'CM': CM_sampler(plus=False), 'CM_plus':CM_sampler(plus=True), 'MF':MF_sampler(plus=False), 'MF_plus':MF_sampler(plus=True)}
 class NET(torch.nn.Module):
     """
         Jointly trained model baseline for NCGL tasks
@@ -215,11 +214,6 @@ class NET(torch.nn.Module):
 
         self.net.zero_grad()
         loss = 0
-        '''
-        cls_retain = []
-        for clss in args.task_seq:
-            cls_retain.extend(clss)
-        '''
         output, _ = self.net(g, features)
 
         for tt,task in enumerate(args.task_seq[0:t+1]):
@@ -261,9 +255,6 @@ class NET(torch.nn.Module):
 
         self.net.zero_grad()
         loss = 0
-        #cls_retain = []
-        #for clss in args.task_seq:
-        #    cls_retain.extend(clss)
         output, _ = self.net(g, features)
         offset1, offset2 = self.task_manager.get_label_offset(t)
         for tt,task in enumerate(args.task_seq[0:t+1]):

@@ -62,10 +62,10 @@ def get_pipeline(args):
 
 
 def data_prepare(args):
-    '''
+    """
     check whether the processed data exist or create new processed data
     if args.load_check is True, loading data will be tried, else, will only check the existence of the files
-    '''
+    """
     torch.cuda.set_device(args.gpu)
     dataset = NodeLevelDataset(args.dataset,ratio_valid_test=args.ratio_valid_test,args=args)
     args.d_data, args.n_cls = dataset.d_data, dataset.n_cls
@@ -1044,7 +1044,6 @@ def pipeline_class_IL_no_inter_edge_minibatch_joint(args, valid=False):
                                                     drop_last=False)
 
         for epoch in range(epochs):
-            #life_model_ins.observe_task_IL_batch(args, subgraphs, dataloader, featuress, labelss, task, train_idss, ids_per_clss, dataset)
             life_model_ins.observe_class_IL_batch(args, subgraphs, dataloader, featuress, labelss, task, train_idss, ids_per_clss, dataset)
 
         if not valid:
