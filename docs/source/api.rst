@@ -73,16 +73,10 @@ GEM
 .. automodule:: GCGL.Baselines.gem_model
    :members:
 
-Joint (task-IL)
+Joint
 ~~~~~~~~~~~
 
 .. automodule:: GCGL.Baselines.jointtrain_model
-   :members:
-
-Joint (class-IL)
-~~~~~~~~~~~
-
-.. automodule:: GCGL.Baselines.jointreplay_model
    :members:
 
 LwF
