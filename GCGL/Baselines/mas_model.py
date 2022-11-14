@@ -194,7 +194,7 @@ class NET(torch.nn.Module):
                 self.fisher=new_fisher
             else:
                 for f in range(len(new_fisher)):
-                    self.fisher[f] = (self.fisher[f]*self.n_observed_data + new_fisher[f]+n_new_data)/(self.n_observed_data+n_new_data)
+                    self.fisher[f] = (self.fisher[f]*self.n_observed_data + new_fisher[f]*n_new_data)/(self.n_observed_data+n_new_data)
             self.n_observed_data+=n_new_data
 
             # store optimal parameters
