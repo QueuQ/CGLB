@@ -19,7 +19,7 @@ if __name__ == '__main__':
     parser.add_argument('--weight-decay', type=float, default=5e-4, help="weight decay")
     parser.add_argument('--backbone', type=str, default='GCN', help="backbone GNN, [GAT, GCN, GIN]")
     parser.add_argument('--method', type=str,
-                        choices=["bare", 'lwf', 'gem', 'ewc', 'mas', 'twp', 'jointtrain', 'ergnn', 'joint','Joint'], default="gem",
+                        choices=["bare", 'lwf', 'gem', 'ewc', 'mas', 'twp', 'jointtrain', 'ergnn', 'joint', 'Joint', 'dce'], default="gem",
                         help="baseline continual learning method")
     # parameters for continual learning settings
     parser.add_argument('--share-labels', type=strtobool, default=False,
@@ -45,6 +45,8 @@ if __name__ == '__main__':
     parser.add_argument('--GCN-args', default={'h_dims': [256], 'dropout': 0.0, 'batch_norm': False})
     parser.add_argument('--GIN-args', default={'h_dims': [256], 'dropout': 0.0})
     parser.add_argument('--ergnn_args', type=str2dict, default={'budget': [100,1000], 'd': [0.5], 'sampler': ['CM']},
+                        help='sampler options: CM, CM_plus, MF, MF_plus')
+    parser.add_argument('--dce_args', type=str2dict, default={'budget': [100,1000], 'd': [0.5], 'sampler': ['CM']},
                         help='sampler options: CM, CM_plus, MF, MF_plus')
     parser.add_argument('--lwf_args', type=str2dict, default={'lambda_dist': [1.0, 10.0], 'T': [2.0, 20.0]})
     parser.add_argument('--twp_args', type=str2dict, default={'lambda_l': 10000., 'lambda_t': 10000., 'beta': 0.01})
@@ -74,7 +76,8 @@ if __name__ == '__main__':
     set_seed(args)
 
     method_args = {'ergnn': args.ergnn_args, 'lwf': args.lwf_args, 'twp': args.twp_args, 'ewc': args.ewc_args,
-                   'bare': args.bare_args, 'gem': args.gem_args, 'mas': args.mas_args, 'joint': args.joint_args}
+                   'bare': args.bare_args, 'gem': args.gem_args, 'mas': args.mas_args, 'joint': args.joint_args,
+                   'dce': args.dce_args}
     backbone_args = {'GCN': args.GCN_args, 'GAT': args.GAT_args, 'GIN': args.GIN_args}
     hyp_param_list = compose_hyper_params(method_args[args.method])
     AP_best, name_best = 0, None
@@ -145,9 +148,11 @@ if __name__ == '__main__':
                     print('error happens on \n', name)
                     torch.cuda.empty_cache()
                     break
+
+            hyp_best_str = hyp_params_str
             if np.mean(AP_dict[hyp_params_str]) > AP_best:
                 AP_best = np.mean(AP_dict[hyp_params_str])
-                hyp_best_str = hyp_params_str
+                # hyp_best_str = hyp_params_str
                 name_best = name
             print(f'best params is {hyp_best_str}, best AP is {AP_best}')
             with open(f'{args.result_path}/{name}.pkl', 'wb') as f:

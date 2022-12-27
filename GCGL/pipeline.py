@@ -16,6 +16,8 @@ joint_alias = ['joint', 'Joint', 'joint_replay_all', 'jointtrain', 'jointreplay'
 def assign_hyp_param(args, params):
     if args['method']=='lwf':
         args['lwf_args'] = params
+    if args['method']=='dce':
+        args['dce_args'] = params
     if args['method'] == 'bare':
         args['bare_args'] = params
     if args['method'] == 'gem':

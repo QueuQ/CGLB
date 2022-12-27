@@ -115,7 +115,6 @@ class NET(torch.nn.Module):
             dist_target = target[:, o1:o2]
             dist_loss = MultiClassCrossEntropy(logits_dist, dist_target, args.lwf_args['T'])
             loss = loss + args.lwf_args['lambda_dist']*dist_loss
-        
         loss.backward()
         self.opt.step()
 
@@ -231,20 +230,20 @@ class NET(torch.nn.Module):
 
     def observe_class_IL_batch(self, args, g, dataloader, features, labels, t, prev_model, train_ids, ids_per_cls, dataset):
         """
-                                The method for learning the given tasks under the class-IL setting with mini-batch training.
+        The method for learning the given tasks under the class-IL setting with mini-batch training.
 
-                                :param args: Same as the args in __init__().
-                                :param g: The graph of the current task.
-                                :param dataloader: The data loader for mini-batch training
-                                :param features: Node features of the current task.
-                                :param labels: Labels of the nodes in the current task.
-                                :param t: Index of the current task.
-                                :param prev_model: The model obtained after learning the previous task.
-                                :param train_ids: The indices of the nodes participating in the training.
-                                :param ids_per_cls: Indices of the nodes in each class (currently not in use).
-                                :param dataset: The entire dataset (currently not in use).
+        :param args: Same as the args in __init__().
+        :param g: The graph of the current task.
+        :param dataloader: The data loader for mini-batch training
+        :param features: Node features of the current task.
+        :param labels: Labels of the nodes in the current task.
+        :param t: Index of the current task.
+        :param prev_model: The model obtained after learning the previous task.
+        :param train_ids: The indices of the nodes participating in the training.
+        :param ids_per_cls: Indices of the nodes in each class (currently not in use).
+        :param dataset: The entire dataset (currently not in use).
 
-                                """
+        """
         self.net.train()
         # if new task
         if t != self.current_task:
@@ -274,6 +273,12 @@ class NET(torch.nn.Module):
             # knowledge distillation
             if t > 0:
                 target = prev_model.forward_batch(blocks, input_features)
+
+                xx = prev_model.forward_batch(blocks, input_features, return_feats=True)[-1]
+                yy = self.net.forward_batch(blocks, input_features, return_feats=True)[-1]
+                print(xx.sum(), yy.sum())
+                import pdb; pdb.set_trace()
+
                 if isinstance(target, tuple):
                     target = target[0]
                 for oldt in range(t):
