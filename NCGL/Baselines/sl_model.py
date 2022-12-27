@@ -5,6 +5,9 @@ import pickle
 from dgl.utils import expand_as_pair
 
 samplers = {'CM': CM_sampler(plus=False), 'CM_plus':CM_sampler(plus=True), 'MF':MF_sampler(plus=False), 'MF_plus':MF_sampler(plus=True),'random':random_sampler(plus=False)}
+K_SAMPLES = 5
+
+
 class NET(torch.nn.Module):
     """
         ER-GNN baseline for NCGL tasks
@@ -328,7 +331,7 @@ class NET(torch.nn.Module):
                     self.aux_g.srcdata['h'] = feat_src
                     self.aux_g.apply_edges(lambda edges: {'se': torch.sum((torch.mul(edges.src['h'], torch.tanh(edges.dst['h']))), 1)})
                     soft_edges = self.aux_g.edata.pop('se')
-                    rand_k_node_samples = random.sample(range(0, self.aux_g.num_nodes()), 5)
+                    rand_k_node_samples = random.sample(range(0, self.aux_g.num_nodes()), K_SAMPLES)
 
                     for node_idx in rand_k_node_samples:
                         # For the old (previous task) model.
