@@ -35,6 +35,12 @@ For GCGL tasks, the following packages are also required:
 
 * rdkit==2020.09.1.0
  
+ ### Environment Setup:
+ Run the following command to create the environment:
+ ```bash
+ conda create --name <env> --file requirements.txt
+ ```
+
  ## Dataset Usages
  
  ### Importing the Datasets
