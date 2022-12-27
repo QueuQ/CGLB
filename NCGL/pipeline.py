@@ -71,8 +71,6 @@ def data_prepare(args):
     args.d_data, args.n_cls = dataset.d_data, dataset.n_cls
     cls = [list(range(i, i + args.n_cls_per_task)) for i in range(0, args.n_cls-1, args.n_cls_per_task)]
     args.task_seq = cls
-    # args.task_seq = cls[:33]
-    # import pdb; pdb.set_trace()
 
     args.n_tasks = len(args.task_seq)
     n_cls_so_far = 0
