@@ -2,6 +2,7 @@ import torch
 import copy
 from .ergnn_utils import *
 import pickle
+from dgl.utils import expand_as_pair
 
 samplers = {'CM': CM_sampler(plus=False), 'CM_plus':CM_sampler(plus=True), 'MF':MF_sampler(plus=False), 'MF_plus':MF_sampler(plus=True),'random':random_sampler(plus=False)}
 class NET(torch.nn.Module):
@@ -311,7 +312,7 @@ class NET(torch.nn.Module):
                     self.aux_loss_w_ = torch.tensor(loss_w_).to(device='cuda:{}'.format(args.gpu))
 
             if t != 0:
-                output, _, cur_feats = self.net(self.aux_g, self.aux_features, return_feats=True)
+                output, _, _ = self.net(self.aux_g, self.aux_features, return_feats=True)
                 if args.classifier_increase:
                     loss_aux = self.ce(output[:, offset1:offset2], self.aux_labels,
                                        weight=self.aux_loss_w_[offset1: offset2])
@@ -321,14 +322,21 @@ class NET(torch.nn.Module):
                 structure_loss = 0
                 if prev_model is not None:
                     # If there is a previous model, then we get the previous model's logits to calculate the distillation loss.
-                    prev_output, _, prev_feats = prev_model(self.aux_g, self.aux_features, return_feats=True)
-                    adj_matrix = self.aux_g.adj()
+                    prev_output, edge_list, _ = prev_model(self.aux_g, self.aux_features, return_feats=True)
+                    # adj_matrix = self.aux_g.adj()
+                    feat_src, _ = expand_as_pair(self.aux_features)
+                    self.aux_g.srcdata['h'] = feat_src
+                    self.aux_g.apply_edges(lambda edges: {'se': torch.sum((torch.mul(edges.src['h'], torch.tanh(edges.dst['h']))), 1)})
+                    soft_edges = self.aux_g.edata.pop('se')
                     rand_k_node_samples = random.sample(range(0, self.aux_g.num_nodes()), 5)
+
                     for node_idx in rand_k_node_samples:
                         # For the old (previous task) model.
                         # Get the different in term of features between the target node and its neighbor nodes. (This aims to extract the
                         # structure information between the node and its neighbors).
-                        ref_neighbor_nodes = prev_feats[adj_matrix[node_idx].to_dense().bool()]
+                        prev_feats = prev_output[:, offset1:offset2]
+                        # ref_neighbor_nodes = prev_feats[adj_matrix[node_idx].to_dense().bool()]
+                        ref_neighbor_nodes = soft_edges.unsqueeze(1) * prev_feats
                         if ref_neighbor_nodes.numel() > 0:
                             ref_neighbors_feat = ref_neighbor_nodes.sum(dim=0)
                             ref_diff_vector = prev_feats[node_idx] - ref_neighbors_feat
@@ -338,7 +346,9 @@ class NET(torch.nn.Module):
                         # For the current model.
                         # Get the different in term of features between the target node and its neighbor nodes. (This aims to extract the
                         # structure information between the node and its neighbors).
-                        cur_neighbor_nodes = cur_feats[adj_matrix[node_idx].to_dense().bool()]
+                        cur_feats = output[:, offset1:offset2]
+                        # cur_neighbor_nodes = cur_feats[adj_matrix[node_idx].to_dense().bool()]
+                        cur_neighbor_nodes = soft_edges.unsqueeze(1) * cur_feats
                         if cur_neighbor_nodes.numel() > 0:
                             cur_neighbors_feat = cur_neighbor_nodes.sum(dim=0)
                             cur_diff_vector = cur_feats[node_idx] - cur_neighbors_feat
@@ -356,7 +366,6 @@ class NET(torch.nn.Module):
                                                                            torch.unsqueeze(cur_diff_vector, dim=0),
                                                                            torch.ones(1).to('cuda:{}'.format(args.gpu)))
                             structure_loss += step_structure_loss
-                            import pdb; pdb.set_trace()
 
                 loss = beta * loss + (1 - beta) * (loss_aux + structure_loss)
 

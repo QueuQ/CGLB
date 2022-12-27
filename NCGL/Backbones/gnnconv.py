@@ -93,7 +93,7 @@ class GINConv(nn.Module):
         rst = (1 + self.eps) * feat_dst + graph.dstdata['neigh']
         if self.apply_func is not None:
             rst = self.apply_func(rst)
-        #graph.apply_edges(fn.u_sub_v('h', 'h', 'e'))
+        # graph.apply_edges(fn.u_sub_v('h', 'h', 'e'))
         graph.apply_edges(lambda edges: {'e': th.sum((th.mul(edges.src['h'], th.tanh(edges.dst['h']))), 1)})
         e = graph.edata.pop('e')
 
