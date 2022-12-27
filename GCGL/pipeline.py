@@ -18,6 +18,8 @@ def assign_hyp_param(args, params):
         args['lwf_args'] = params
     if args['method']=='dce':
         args['dce_args'] = params
+    if args['method']=='sl':
+        args['sl_args'] = params
     if args['method'] == 'bare':
         args['bare_args'] = params
     if args['method'] == 'gem':

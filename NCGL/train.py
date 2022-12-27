@@ -19,7 +19,7 @@ if __name__ == '__main__':
     parser.add_argument('--weight-decay', type=float, default=5e-4, help="weight decay")
     parser.add_argument('--backbone', type=str, default='GCN', help="backbone GNN, [GAT, GCN, GIN]")
     parser.add_argument('--method', type=str,
-                        choices=["bare", 'lwf', 'gem', 'ewc', 'mas', 'twp', 'jointtrain', 'ergnn', 'joint', 'Joint', 'dce'], default="gem",
+                        choices=["bare", 'lwf', 'gem', 'ewc', 'mas', 'twp', 'jointtrain', 'ergnn', 'joint', 'Joint', 'dce', 'sl'], default="gem",
                         help="baseline continual learning method")
     # parameters for continual learning settings
     parser.add_argument('--share-labels', type=strtobool, default=False,
@@ -48,6 +48,8 @@ if __name__ == '__main__':
                         help='sampler options: CM, CM_plus, MF, MF_plus')
     parser.add_argument('--dce_args', type=str2dict, default={'budget': [100,1000], 'd': [0.5], 'sampler': ['CM']},
                         help='sampler options: CM, CM_plus, MF, MF_plus')
+    parser.add_argument('--sl_args', type=str2dict, default={'budget': [100,1000], 'd': [0.5], 'sampler': ['CM']},
+                        help='sampler options: CM, CM_plus, MF, MF_plus')
     parser.add_argument('--lwf_args', type=str2dict, default={'lambda_dist': [1.0, 10.0], 'T': [2.0, 20.0]})
     parser.add_argument('--twp_args', type=str2dict, default={'lambda_l': 10000., 'lambda_t': 10000., 'beta': 0.01})
     parser.add_argument('--ewc_args', type=str2dict, default={'memory_strength': 10000.})
@@ -65,7 +67,7 @@ if __name__ == '__main__':
     parser.add_argument('--n_nbs_sample', type=lambda x: [int(i) for i in x.replace(' ', '').split(',')], default=[10, 25], help='number of neighbors to sample per hop, use comma to separate the numbers when using the command line, e.g. 10,25 or 10, 25')
     parser.add_argument('--nb_sampler', default=None)
     parser.add_argument('--replace_illegal_char', type=strtobool, default=False)
-    parser.add_argument('--ori_data_path', type=str, default='/store/data', help='the root path to raw data')
+    parser.add_argument('--ori_data_path', type=str, default='./data', help='the root path to raw data')
     parser.add_argument('--data_path', type=str, default='./data', help='the path to processed data (splitted into tasks)')
     parser.add_argument('--result_path', type=str, default='./results', help='the path for saving results')
     parser.add_argument('--overwrite_result', type=strtobool, default=False, help='whether to overwrite existing results')
@@ -77,7 +79,7 @@ if __name__ == '__main__':
 
     method_args = {'ergnn': args.ergnn_args, 'lwf': args.lwf_args, 'twp': args.twp_args, 'ewc': args.ewc_args,
                    'bare': args.bare_args, 'gem': args.gem_args, 'mas': args.mas_args, 'joint': args.joint_args,
-                   'dce': args.dce_args}
+                   'dce': args.dce_args, 'sl': args.sl_args}
     backbone_args = {'GCN': args.GCN_args, 'GAT': args.GAT_args, 'GIN': args.GIN_args}
     hyp_param_list = compose_hyper_params(method_args[args.method])
     AP_best, name_best = 0, None

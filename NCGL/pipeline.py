@@ -137,7 +137,7 @@ def pipeline_task_IL_no_inter_edge(args, valid=False):
         task_manager.add_task(task, n_cls_so_far)
 
         for _ in range(epochs):
-            if args.method == 'lwf' or args.method == 'dce':
+            if args.method == 'lwf' or args.method == 'dce' or args.method == 'sl':
                 life_model_ins.observe_task_IL(args, subgraph, features, labels, task, prev_model, train_ids,
                                                ids_per_cls, dataset)
             else:
@@ -236,7 +236,7 @@ def pipeline_task_IL_inter_edge(args, valid=False):
             train_ids_current_task.extend(ids)
 
         for epoch in range(epochs):
-            if args.method == 'lwf' or args.method == 'dce':
+            if args.method == 'lwf' or args.method == 'dce' or args.method == 'sl':
                 life_model_ins.observe_task_IL(args, subgraph, features, labels, task, prev_model,
                                                train_ids_current_task, ids_per_cls_current_task, dataset)
             else:
@@ -499,7 +499,7 @@ def pipeline_class_IL_no_inter_edge(args, valid=False):
 
         # training
         for epoch in range(epochs):
-            if args.method == 'lwf' or args.method == 'dce':
+            if args.method == 'lwf' or args.method == 'dce' or args.method == 'sl':
                 life_model_ins.observe(args, subgraph, features, labels, task, prev_model, train_ids, ids_per_cls, dataset)
             else:
                 life_model_ins.observe(args, subgraph, features, labels, task, train_ids, ids_per_cls, dataset)
@@ -594,7 +594,7 @@ def pipeline_class_IL_inter_edge(args, valid=False):
             train_ids_current_task.extend(ids)
 
         for epoch in range(epochs):
-            if args.method == 'lwf' or args.method == 'dce':
+            if args.method == 'lwf' or args.method == 'dce' or args.method == 'sl':
                 life_model_ins.observe(args, subgraph, features, labels, task, prev_model,
                                                train_ids_current_task, ids_per_cls_current_task, dataset)
             else:
@@ -854,7 +854,7 @@ def pipeline_task_IL_no_inter_edge_minibatch(args, valid=False):
                                                     drop_last=False)
 
         for epoch in range(epochs):
-            if args.method == 'lwf' or args.method == 'dce':
+            if args.method == 'lwf' or args.method == 'dce' or args.method == 'sl':
                 life_model_ins.observe_task_IL_batch(args, subgraph, dataloader, features, labels, task, prev_model, train_ids, ids_per_cls,
                                        dataset)
             else:
@@ -1133,7 +1133,7 @@ def pipeline_class_IL_no_inter_edge_minibatch(args, valid=False):
                                                     drop_last=False)
 
         for epoch in range(epochs):
-            if args.method == 'lwf' or args.method == 'dce':
+            if args.method == 'lwf' or args.method == 'dce' or args.method == 'sl':
                 life_model_ins.observe_class_IL_batch(args, subgraph, dataloader, features, labels, task, prev_model, train_ids, ids_per_cls,
                                        dataset)
             else:
@@ -1227,7 +1227,7 @@ def pipeline_task_IL_inter_edge_minibatch(args, valid=False):
         task_manager.add_task(task, n_cls_so_far)
 
         for epoch in range(epochs):
-            if args.method == 'lwf' or args.method == 'dce':
+            if args.method == 'lwf' or args.method == 'dce' or args.method == 'sl':
                 life_model_ins.observe_task_IL_batch(args, subgraph, dataloader, features, labels, task, prev_model,
                                                train_ids_current_task, ids_per_cls_current_task, dataset)
             else:
@@ -1417,7 +1417,7 @@ def pipeline_class_IL_inter_edge_minibatch(args, valid=False):
                                                     drop_last=False)
 
         for epoch in range(epochs):
-            if args.method == 'lwf' or args.method == 'dce':
+            if args.method == 'lwf' or args.method == 'dce' or args.method == 'sl':
                 life_model_ins.observe_class_IL_batch(args, subgraph, dataloader, features, labels, task, prev_model,
                                                train_ids_current_task, ids_per_cls_current_task, dataset)
             else:
