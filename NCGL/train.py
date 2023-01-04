@@ -14,7 +14,7 @@ if __name__ == '__main__':
     parser.add_argument("--dataset", type=str, default='Products-CL', help='Products-CL, Reddit-CL, Arxiv-CL, CoraFull-CL')
     parser.add_argument("--gpu", type=int, default=0, help="which GPU to use.")
     parser.add_argument("--seed", type=int, default=1, help="seed for exp")
-    parser.add_argument("--epochs", type=int, default=1, help="number of training epochs, default = 200")
+    parser.add_argument("--epochs", type=int, default=200, help="number of training epochs, default = 200")
     parser.add_argument("--lr", type=float, default=0.005, help="learning rate")
     parser.add_argument('--weight-decay', type=float, default=5e-4, help="weight decay")
     parser.add_argument('--backbone', type=str, default='GCN', help="backbone GNN, [GAT, GCN, GIN]")
