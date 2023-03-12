@@ -39,6 +39,10 @@ class NET(torch.nn.Module):
 
         self.data_loader = None
 
+    def change_model(self,model,args):
+        self.net = model
+        self.optimizer = Adam(model.parameters(), lr=args['lr'])
+
     def forward(self, features):
         output = self.net(features)
         return output

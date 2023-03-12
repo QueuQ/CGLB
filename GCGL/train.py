@@ -1,5 +1,6 @@
 import traceback
 import pickle
+import datetime
 from distutils.util import strtobool
 from pipeline import *
 import sys
@@ -19,36 +20,38 @@ if __name__ == '__main__':
     parser.add_argument('--backbone', type=str, default='GCN', choices=['CusGCN','GCN', 'GAT', 'Weave', 'HPNs'],
                         help='Model to use')
     parser.add_argument('--method', type=str, choices=['bare', 'lwf', 'gem', 'ewc', 'mas', 'twp', 'jointtrain'],
-                        default='twp', help='Method to use')
-    parser.add_argument('-d', '--dataset', type=str, choices=['SIDER-tIL','Tox21-tIL','Aromaticity-CL'], default='Aromaticity-CL',
+                        default='lwf', help='Method to use')
+    parser.add_argument('-d', '--dataset', type=str, choices=['SIDER-tIL','Tox21-tIL','Aromaticity-CL'], default='SIDER-tIL',
                         help='Dataset to use')
     parser.add_argument('--clsIL', type=strtobool, default=False)
     parser.add_argument('-p', '--pre-trained', action='store_true',
                         help='Whether to skip training and use a pre-trained model')
-    parser.add_argument('-g', '--gpu', type=int, default=1,
+    parser.add_argument('-g', '--gpu', type=int, default=0,
                         help="which GPU to use.")
 
     # parameters for different methods
-    parser.add_argument('--lwf_args', type=str2dict, default={'lambda_dist': [1.0], 'T': [2.0]})
+    parser.add_argument('--lwf_args', type=str2dict, default={'lambda_dist': [0.1], 'T': [0.2]})
     parser.add_argument('--twp_args', type=str2dict, default={'lambda_l': 10000., 'lambda_t': 100., 'beta': 0.1})
     parser.add_argument('--ewc_args', type=str2dict, default={'memory_strength': [10000.,1000000.]})
     parser.add_argument('--mas_args', type=str2dict, default={'memory_strength': 10000.})
     parser.add_argument('--gem_args', type=str2dict, default={'memory_strength': 0.5, 'n_memories': 100})
     parser.add_argument('--bare_args', type=str2dict, default={'Na': None})
-    parser.add_argument('--joint_args', type=str2dict, default={'Na': None})
+    parser.add_argument('--joint_args', type=str2dict, default={'Na': None, 'reset_param':False})
 
     parser.add_argument('-s', '--random_seed', type=int, default=0,
                         help="seed for exp")
     parser.add_argument('--alpha_dis', type=float, default=0.1)
     parser.add_argument('--classifier_increase',default=False,help='this is deprecated, no effect at all')
     #parser.add_argument('--n_cls_per_task', default=1)
-    parser.add_argument('--num_epochs',type=int,default=2)
-    parser.add_argument('--batch_size',type=int,default=128)
+    parser.add_argument('--num_epochs',type=int,default=100)
+    parser.add_argument('--batch_size',type=int,default=10000)
     parser.add_argument('--threshold_pubchem', default=20)
     parser.add_argument('--frac_train', default=0.8)
     parser.add_argument('--frac_val', default=0.1)
     parser.add_argument('--frac_test', default=0.1)
-    parser.add_argument('--repeats',type=int, default=2)
+    parser.add_argument('--patience', default=100)
+    parser.add_argument('--repeats',type=int, default=3)
+    parser.add_argument('--early_stop', type=strtobool, default=False)
     parser.add_argument('--replace_illegal_char', type=strtobool, default=False)
     parser.add_argument('--result_path', type=str, default='./results', help='the path for saving results')
     parser.add_argument('--overwrite_result', type=strtobool, default=True,
@@ -85,7 +88,9 @@ if __name__ == '__main__':
             args['n_cls_per_task'] = 1
             subfolder = f'tskIL/{args["frac_train"]}/'
 
-        name = f"{subfolder}val_{args['dataset']}_{args['n_cls_per_task']}_{args['method']}_{list(hyp_params.values())}_{args['backbone']}_{args['gcn_hidden_feats']}_{args['classifier_increase']}_bs{args['batch_size']}_{args['num_epochs']}_{args['repeats']}"
+        dt = datetime.datetime.now()
+        formatted_time = f'{dt.date()}{dt.hour}{dt.minute}'.replace('-', '')
+        name = f"{subfolder}val_{args['dataset']}_{args['n_cls_per_task']}_{args['method']}_{list(hyp_params.values())}_{args['backbone']}_{args['gcn_hidden_feats']}_{args['classifier_increase']}_es{args['early_stop']}_p{args['patience']}_bs{args['batch_size']}_{args['num_epochs']}_{args['repeats']}_{formatted_time}"
         args['name'] = name
         mkdir_if_missing(f"{args['result_path']}/" + subfolder)
         if args['replace_illegal_char']:

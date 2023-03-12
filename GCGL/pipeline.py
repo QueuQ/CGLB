@@ -350,9 +350,12 @@ def pipeline_multi_label(args, valid=False):
     val_func, test_func = eval_single_task_multi_label, eval_all_learnt_task_multi_label
     for tid, task_i in enumerate(args['tasks']):
         if args['method'] == 'jointtrain' and life_model_ins is not None:
-            # reset the model for joint train
-            model = load_model(args).cuda(args['gpu'])
-            life_model_ins.net=model
+            if args['joint_args']['reset_param']:
+                # reset the model for joint train
+                model = load_model(args)
+                model.cuda(args['gpu'])
+                life_model_ins.change_model(model, args)
+
         name, ite = args['current_model_save_path']
         config_name = name.split('/')[-1]
         subfolder_c = name.split(config_name)[-2]
@@ -375,11 +378,11 @@ def pipeline_multi_label(args, valid=False):
             val_score = val_func(args, model, val_loader, tid)
             early_stop = stopper.step(val_score, model)
 
-            if early_stop:
+            if early_stop and args['early_stop']:
                 print(epoch)
                 break
 
-        if not args['pre_trained'] and valid:
+        if not args['pre_trained'] and valid and args['early_stop']:
             stopper.load_checkpoint(model)
         if not valid:
             model = pickle.load(open(save_model_path,'rb')).cuda(args['gpu'])

@@ -170,7 +170,8 @@ class NET(torch.nn.Module):
                 for oldt in range(task_i):
                     logits_dist = logits[:, oldt]
                     dist_target = target[:, oldt]
-                    dist_loss = BinaryCrossEntropy(logits_dist, dist_target, args['lwf_args']['T'])
+                    #dist_loss = BinaryCrossEntropy(logits_dist, dist_target, args['lwf_args']['T'])
+                    dist_loss = MultiClassCrossEntropy(logits_dist, dist_target, args['lwf_args']['T'])
                     loss = loss + args['lwf_args']['lambda_dist'] * dist_loss
 
             self.optimizer.zero_grad()
