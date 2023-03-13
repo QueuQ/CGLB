@@ -49,7 +49,7 @@ if __name__ == '__main__':
     parser.add_argument('--frac_train', default=0.8)
     parser.add_argument('--frac_val', default=0.1)
     parser.add_argument('--frac_test', default=0.1)
-    parser.add_argument('--patience', default=100)
+    parser.add_argument('--patience', default=10)
     parser.add_argument('--repeats',type=int, default=3)
     parser.add_argument('--early_stop', type=strtobool, default=False)
     parser.add_argument('--replace_illegal_char', type=strtobool, default=False)
