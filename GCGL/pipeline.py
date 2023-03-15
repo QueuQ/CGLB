@@ -351,8 +351,8 @@ def pipeline_multi_label(args, valid=False):
     for tid, task_i in enumerate(args['tasks']):
         if args['method'] == 'jointtrain' and life_model_ins is not None:
             # reset the model for joint train
-            model = load_model(args).cuda(args['gpu'])
-            life_model_ins.net=model
+            dic = load_model(args).state_dict()
+            life_model_ins.net.load_state_dict(dic)
         name, ite = args['current_model_save_path']
         config_name = name.split('/')[-1]
         subfolder_c = name.split(config_name)[-2]
@@ -446,8 +446,8 @@ def pipeline_multi_class(args, valid=False):
     for tid, task_i in enumerate(args['tasks']):
         if args['method'] == 'jointtrain' and life_model_ins is not None:
             # reset the model for joint train
-            model = load_model(args).cuda(args['gpu'])
-            life_model_ins.net=model
+            dic = load_model(args).state_dict()
+            life_model_ins.net.load_state_dict(dic)
         name, ite = args['current_model_save_path']
         config_name = name.split('/')[-1]
         subfolder_c = name.split(config_name)[-2]
