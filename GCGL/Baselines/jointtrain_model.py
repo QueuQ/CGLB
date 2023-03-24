@@ -78,7 +78,7 @@ class NET(torch.nn.Module):
         
         #train_score = np.mean(train_meter.compute_metric(args['metric_name']))
 
-    def observe_tskIL_multicls(self, data_loader, loss_criterion, task_i, args):
+    def observe_tskIL_multicls(self, data_loader, loss_criterion, task_i, args, train_loader_joint):
         """
                                 The method for learning the given tasks under the task-IL setting with multi-class classification datasets.
 
@@ -90,26 +90,26 @@ class NET(torch.nn.Module):
                                 """
         self.net.train()
         #train_meter = Meter()
-        loss=0
-        for oldt_id, old_t in enumerate(args['tasks'][0:task_i + 1]):  # range(task_i):
-            for batch_id, batch_data in enumerate(data_loader[oldt_id]):
-                smiles, bg, labels, masks = batch_data
-                labels, masks = labels.cuda(), masks.cuda()
-                logits = predict(args, self.net, bg.to(f"cuda:{args['gpu']}"), oldt_id)
+        clss = []
+        for tid in args['tasks'][0:task_i + 1]:
+            clss.extend(tid)
+        for batch_id, batch_data in enumerate(train_loader_joint[task_i]):
+            smiles, bg, labels, masks = batch_data
+            labels, masks = labels.cuda(), masks.cuda()
+            logits = predict(args, self.net, bg.to(f"cuda:{args['gpu']}"), task_i)
 
-                # Mask non-existing labels
-                n_per_cls = [(labels == j).sum() for j in old_t]
-                loss_w_ = [1. / max(i, 1) for i in n_per_cls]
-                loss_w_ = torch.tensor(loss_w_).to(device='cuda:{}'.format(args['gpu']))
-                # labels= labels.long()
-                for i, c in enumerate(old_t):
-                    labels[labels == c] = i
-                loss_aux = loss_criterion(logits[:, old_t], labels.long(), weight=loss_w_).float()
-                loss = loss + loss_aux
+            # Mask non-existing labels
+            n_per_cls = [(labels == j).sum() for j in clss]
+            loss_w_ = [1. / max(i, 1) for i in n_per_cls]
+            loss_w_ = torch.tensor(loss_w_).to(device='cuda:{}'.format(args['gpu']))
+            # labels= labels.long()
+            for i, c in enumerate(clss):
+                labels[labels == c] = i
+            loss = loss_criterion(logits[:, clss], labels.long(), weight=loss_w_).float()
+            self.optimizer.zero_grad()
+            loss.backward()
+            self.optimizer.step()
 
-        self.optimizer.zero_grad()
-        loss.backward()
-        self.optimizer.step()
         #train_meter.update(logits, labels, masks)
 
     def observe_clsIL(self, data_loader, loss_criterion, task_i, args):

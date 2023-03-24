@@ -20,8 +20,8 @@ if __name__ == '__main__':
     parser.add_argument('--backbone', type=str, default='GCN', choices=['CusGCN','GCN', 'GAT', 'Weave', 'HPNs'],
                         help='Model to use')
     parser.add_argument('--method', type=str, choices=['bare', 'lwf', 'gem', 'ewc', 'mas', 'twp', 'jointtrain'],
-                        default='lwf', help='Method to use')
-    parser.add_argument('-d', '--dataset', type=str, choices=['SIDER-tIL','Tox21-tIL','Aromaticity-CL'], default='SIDER-tIL',
+                        default='jointtrain', help='Method to use')
+    parser.add_argument('-d', '--dataset', type=str, choices=['SIDER-tIL','Tox21-tIL','Aromaticity-CL'], default='Aromaticity-CL',
                         help='Dataset to use')
     parser.add_argument('--clsIL', type=strtobool, default=False)
     parser.add_argument('-p', '--pre-trained', action='store_true',
@@ -43,13 +43,13 @@ if __name__ == '__main__':
     parser.add_argument('--alpha_dis', type=float, default=0.1)
     parser.add_argument('--classifier_increase',default=False,help='this is deprecated, no effect at all')
     #parser.add_argument('--n_cls_per_task', default=1)
-    parser.add_argument('--num_epochs',type=int,default=100)
-    parser.add_argument('--batch_size',type=int,default=10000)
+    parser.add_argument('--num_epochs',type=int,default=20)
+    parser.add_argument('--batch_size',type=int,default=1000)
     parser.add_argument('--threshold_pubchem', default=20)
     parser.add_argument('--frac_train', default=0.8)
     parser.add_argument('--frac_val', default=0.1)
     parser.add_argument('--frac_test', default=0.1)
-    parser.add_argument('--patience', default=10)
+    parser.add_argument('--patience', default=100)
     parser.add_argument('--repeats',type=int, default=3)
     parser.add_argument('--early_stop', type=strtobool, default=False)
     parser.add_argument('--replace_illegal_char', type=strtobool, default=False)

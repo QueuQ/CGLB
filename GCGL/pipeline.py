@@ -6,7 +6,7 @@ import importlib
 from dgllife.model import load_pretrained
 from dgllife.utils import EarlyStopping, Meter
 from torch.nn import BCEWithLogitsLoss
-from torch.utils.data import DataLoader
+from torch.utils.data import ConcatDataset,DataLoader
 import copy
 from utils import collate_molgraphs, load_model, GraphLevelDataset
 import os
@@ -409,11 +409,13 @@ def pipeline_multi_class(args, valid=False):
     torch.cuda.set_device(args['gpu'])
     G = GraphLevelDataset(args)
     dataset, train_set, val_set, test_set = G.dataset, G.train_set, G.val_set, G.test_set
+    train_set_joint = [ConcatDataset(train_set[0:i]) for i in range(1,len(train_set)+1)]
     coll_f = collate_molgraphs
     args['n_cls'] = dataset.labels.max().int().item() + 1
     args['n_outheads'] = args['n_cls']
 
     train_loader = [DataLoader(s, batch_size=args['batch_size'], collate_fn=coll_f, shuffle=True) for s in train_set] # train_set, a list of data for each task
+    train_loader_joint = [DataLoader(s, batch_size=args['batch_size'], collate_fn=coll_f, shuffle=True) for s in train_set_joint]
     val_loader = [DataLoader(s, batch_size=args['batch_size'], collate_fn=coll_f) for s in val_set]
     test_loader_ = [DataLoader(s, batch_size=args['batch_size'],collate_fn=coll_f) for s in test_set]
     test_loader = val_loader if valid else test_loader_
@@ -448,9 +450,11 @@ def pipeline_multi_class(args, valid=False):
 
     for tid, task_i in enumerate(args['tasks']):
         if args['method'] == 'jointtrain' and life_model_ins is not None:
-            # reset the model for joint train
-            model = load_model(args).cuda(args['gpu'])
-            life_model_ins.net=model
+            if args['joint_args']['reset_param']:
+                # reset the model for joint train
+                model = load_model(args)
+                model.cuda(args['gpu'])
+                life_model_ins.change_model(model, args)
         name, ite = args['current_model_save_path']
         config_name = name.split('/')[-1]
         subfolder_c = name.split(config_name)[-2]
@@ -462,6 +466,8 @@ def pipeline_multi_class(args, valid=False):
             # Train
             if args['method'] == 'lwf':
                 train_func(train_loader, loss_criterion, tid, args, prev_model)
+            elif args['method'] == 'jointtrain':
+                train_func(train_loader, loss_criterion, tid, args, train_loader_joint)
             else:
                 train_func(train_loader, loss_criterion, tid, args)
 
