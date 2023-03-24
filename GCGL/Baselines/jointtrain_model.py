@@ -1,3 +1,5 @@
+import copy
+
 import torch
 from torch.optim import Adam
 from dgllife.utils import EarlyStopping, Meter
@@ -97,15 +99,21 @@ class NET(torch.nn.Module):
             smiles, bg, labels, masks = batch_data
             labels, masks = labels.cuda(), masks.cuda()
             logits = predict(args, self.net, bg.to(f"cuda:{args['gpu']}"), task_i)
-
-            # Mask non-existing labels
-            n_per_cls = [(labels == j).sum() for j in clss]
-            loss_w_ = [1. / max(i, 1) for i in n_per_cls]
-            loss_w_ = torch.tensor(loss_w_).to(device='cuda:{}'.format(args['gpu']))
-            # labels= labels.long()
-            for i, c in enumerate(clss):
-                labels[labels == c] = i
-            loss = loss_criterion(logits[:, clss], labels.long(), weight=loss_w_).float()
+            loss=0
+            # separately calculate loss for different tasks
+            for oldt_id, old_t in enumerate(args['tasks'][0:task_i + 1]):
+                labels_ = copy.deepcopy(labels).cuda()
+                # Mask non-existing labels
+                n_per_cls = [(labels == j).sum() for j in old_t]
+                loss_w_ = [1. / max(i, 1) for i in n_per_cls]
+                loss_w_ = torch.tensor(loss_w_).to(device='cuda:{}'.format(args['gpu']))
+                # labels= labels.long()
+                ids_current_task = []
+                for i, c in enumerate(old_t):
+                    labels_[labels == c] = i
+                    ids_current_task.extend((labels==c).nonzero().view(-1).tolist())
+                loss_aux = loss_criterion(logits[:, old_t][ids_current_task], labels_[ids_current_task].long(), weight=loss_w_).float()
+                loss = loss + loss_aux
             self.optimizer.zero_grad()
             loss.backward()
             self.optimizer.step()
