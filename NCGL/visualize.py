@@ -37,7 +37,7 @@ def AF_err(performance_matrices):
     err = np.stack([err_minus, err_plus])
     return AF_mean, err, std
 
-def show_performance_matrices(result_path, save_fig_name=None):
+def show_performance_matrices(result_path, save_fig_name=None, multiplier=1.0):
     """
     The function to visualize the performance matrix.
 
@@ -50,7 +50,7 @@ def show_performance_matrices(result_path, save_fig_name=None):
     performance_matrices = pickle.load(open(result_path, 'rb'))
     acc_matrix_mean = np.mean(performance_matrices, axis=0)
     mask = np.tri(acc_matrix_mean.shape[0], k=-1).T
-    acc_matrix_mean = np.ma.array(acc_matrix_mean, mask=mask)
+    acc_matrix_mean = np.ma.array(acc_matrix_mean, mask=mask) * multiplier
     im = plt.imshow(acc_matrix_mean)
     ax.spines.right.set_visible(False)
     ax.spines.top.set_visible(False)
@@ -102,6 +102,7 @@ def show_final_APAF(result_path, GCGL=False):
         output_str=r'{:.1f}$\pm${:.1f}&{:.1f}$\pm${:.1f}'.format(performance_mean[-1]*100, std_am[-1]*100, AF_mean*100, std_AF*100)
         print(r'{:.1f}$\pm${:.1f}&{:.1f}$\pm${:.1f}'.format(performance_mean[-1]*100, std_am[-1]*100, AF_mean*100, std_AF*100)) # convert GCGL results to percentages
     return output_str
+
 
 def show_final_APAF_f1(result_path):
     #show the final AP and AF for results in the form of f1 score
