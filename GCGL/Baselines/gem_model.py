@@ -209,7 +209,7 @@ class NET(torch.nn.Module):
                     overwrite_grad(self.net.parameters, self.grads[:, task_i],
                                    self.grad_dims)
 
-        self.optimizer.step()
+            self.optimizer.step()
 
     def observe_tskIL_multicls(self, data_loader, loss_criterion, task_i, args):
         """
