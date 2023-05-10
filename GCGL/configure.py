@@ -4,7 +4,6 @@ from dgllife.utils import smiles_to_bigraph
 from dgllife.utils import CanonicalAtomFeaturizer
 
 config = {
-    'random_seed': 2,
     'lr': 1e-3,
     'node_data_field': 'h',
     'in_feats': 74,

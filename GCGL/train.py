@@ -3,6 +3,7 @@ import pickle
 import datetime
 from distutils.util import strtobool
 from pipeline import *
+from utils import set_random_seed
 import sys
 import os
 dir_home = os.getcwd()
@@ -38,7 +39,7 @@ if __name__ == '__main__':
     parser.add_argument('--bare_args', type=str2dict, default={'Na': None})
     parser.add_argument('--joint_args', type=str2dict, default={'Na': None, 'reset_param':False})
 
-    parser.add_argument('-s', '--random_seed', type=int, default=0,
+    parser.add_argument('-s', '--random_seed', type=int, default=None,
                         help="seed for exp")
     parser.add_argument('--alpha_dis', type=float, default=0.1)
     parser.add_argument('--classifier_increase',default=False,help='this is deprecated, no effect at all')
@@ -60,6 +61,9 @@ if __name__ == '__main__':
     args = parser.parse_args().__dict__
     args['exp'] = 'config'
     args.update(get_exp_configure(args['exp']))
+
+    if args['random_seed'] is not None:
+        set_random_seed(args['random_seed'])
 
     method_args = {'lwf': args['lwf_args'], 'twp': args['twp_args'],'jointtrain':args['joint_args'],'jointreplay':args['joint_args'],
                    'ewc': args['ewc_args'], 'bare': args['bare_args'], 'gem': args['gem_args'], 'mas': args['mas_args']}

@@ -11,7 +11,7 @@ dir_home = os.getcwd()
 sys.path.append(os.path.join(dir_home,'.local/lib/python3.7/site-packages')) # for hpc usage
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='CGLB')
-    parser.add_argument("--dataset", type=str, default='Products-CL', help='Products-CL, Reddit-CL, Arxiv-CL, CoraFull-CL')
+    parser.add_argument("--dataset", type=str, default='Reddit-CL', help='Products-CL, Reddit-CL, Arxiv-CL, CoraFull-CL')
     parser.add_argument("--gpu", type=int, default=0, help="which GPU to use.")
     parser.add_argument("--seed", type=int, default=1, help="seed for exp")
     parser.add_argument("--epochs", type=int, default=200, help="number of training epochs, default = 200")
@@ -19,7 +19,7 @@ if __name__ == '__main__':
     parser.add_argument('--weight-decay', type=float, default=5e-4, help="weight decay")
     parser.add_argument('--backbone', type=str, default='GCN', help="backbone GNN, [GAT, GCN, GIN]")
     parser.add_argument('--method', type=str,
-                        choices=["bare", 'lwf', 'gem', 'ewc', 'mas', 'twp', 'jointtrain', 'ergnn', 'joint','Joint'], default="gem",
+                        choices=["bare", 'lwf', 'gem', 'ewc', 'mas', 'twp', 'jointtrain', 'ergnn', 'joint','Joint'], default="bare",
                         help="baseline continual learning method")
     # parameters for continual learning settings
     parser.add_argument('--share-labels', type=strtobool, default=False,
@@ -72,6 +72,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     args.ratio_valid_test = [float(i) for i in args.ratio_valid_test]
     set_seed(args)
+    mkdir_if_missing(f'{args.data_path}')
 
     method_args = {'ergnn': args.ergnn_args, 'lwf': args.lwf_args, 'twp': args.twp_args, 'ewc': args.ewc_args,
                    'bare': args.bare_args, 'gem': args.gem_args, 'mas': args.mas_args, 'joint': args.joint_args}

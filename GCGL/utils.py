@@ -7,7 +7,7 @@ from itertools import accumulate
 from dgllife.utils.splitters import RandomSplitter
 from functools import partial
 
-def set_random_seed(seed=0):
+def set_random_seed(seed):
     """Set random seed.
     Parameters
     ----------
