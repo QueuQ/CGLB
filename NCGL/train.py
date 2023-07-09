@@ -11,7 +11,7 @@ dir_home = os.getcwd()
 sys.path.append(os.path.join(dir_home,'.local/lib/python3.7/site-packages')) # for hpc usage
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='CGLB')
-    parser.add_argument("--dataset", type=str, default='Reddit-CL', help='Products-CL, Reddit-CL, Arxiv-CL, CoraFull-CL')
+    parser.add_argument("--dataset", type=str, default='CoraFull-CL', help='Products-CL, Reddit-CL, Arxiv-CL, CoraFull-CL')
     parser.add_argument("--gpu", type=int, default=0, help="which GPU to use.")
     parser.add_argument("--seed", type=int, default=1, help="seed for exp")
     parser.add_argument("--epochs", type=int, default=200, help="number of training epochs, default = 200")

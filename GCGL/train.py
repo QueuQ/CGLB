@@ -21,10 +21,10 @@ if __name__ == '__main__':
     parser.add_argument('--backbone', type=str, default='GCN', choices=['CusGCN','GCN', 'GAT', 'Weave', 'HPNs'],
                         help='Model to use')
     parser.add_argument('--method', type=str, choices=['bare', 'lwf', 'gem', 'ewc', 'mas', 'twp', 'jointtrain'],
-                        default='gem', help='Method to use')
-    parser.add_argument('-d', '--dataset', type=str, choices=['SIDER-tIL','Tox21-tIL','Aromaticity-CL'], default='Aromaticity-CL',
+                        default='twp', help='Method to use')
+    parser.add_argument('-d', '--dataset', type=str, choices=['SIDER-tIL','Tox21-tIL','Aromaticity-CL'], default='SIDER-tIL',
                         help='Dataset to use')
-    parser.add_argument('--clsIL', type=strtobool, default=True)
+    parser.add_argument('--clsIL', type=strtobool, default=False)
     parser.add_argument('-p', '--pre-trained', action='store_true',
                         help='Whether to skip training and use a pre-trained model')
     parser.add_argument('-g', '--gpu', type=int, default=0,

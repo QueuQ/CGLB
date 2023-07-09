@@ -152,7 +152,7 @@ class GraphConv(nn.Module):
             weight = self.weight
 
         # print(self._in_feats, self._out_feats)
-        if self._in_feats > self._out_feats:
+        if self._in_feats > self._out_feats or self._in_feats <= self._out_feats: # the else statement is temporarily abandoned
             # mult W first to reduce the feature size for aggregation.
             if weight is not None:
                 feat = th.matmul(feat, weight)
@@ -169,7 +169,7 @@ class GraphConv(nn.Module):
             graph.update_all(fn.copy_src(src='h', out='m'),
                              fn.sum(msg='m', out='h'))
             rst = graph.dstdata['h']
-        else:
+        else: # the code below is problematic, e_soft does not contain trainable weights in the first layer, so is temporarily not in use
             # aggregate first then mult W
             graph.srcdata['h'] = feat
 
