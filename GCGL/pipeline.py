@@ -408,8 +408,8 @@ def pipeline_multi_class(args, valid=False):
     epochs = args['num_epochs'] if valid else 0
     torch.cuda.set_device(args['gpu'])
     G = GraphLevelDataset(args)
-    dataset, train_set, val_set, test_set = G.dataset, G.train_set, G.val_set, G.test_set
-    train_set_joint = [ConcatDataset(train_set[0:i]) for i in range(1,len(train_set)+1)]
+    dataset, train_set, val_set, test_set = G.dataset, G.train_set, G.val_set, G.test_set # cls-IL and tsk-IL have different test_set, and different test_func
+    train_set_joint = [ConcatDataset(train_set[0:i]) for i in range(1,len(train_set)+1)] # for tsk_IL only, meaningless when cls-IL since train_set already concats learnt tasks when cls-IL
     coll_f = collate_molgraphs
     args['n_cls'] = dataset.labels.max().int().item() + 1
     args['n_outheads'] = args['n_cls']
@@ -466,7 +466,7 @@ def pipeline_multi_class(args, valid=False):
             # Train
             if args['method'] == 'lwf':
                 train_func(train_loader, loss_criterion, tid, args, prev_model)
-            elif args['method'] == 'jointtrain':
+            elif args['method'] == 'jointtrain' and args['clsIL'] == False:
                 train_func(train_loader, loss_criterion, tid, args, train_loader_joint)
             else:
                 train_func(train_loader, loss_criterion, tid, args)
