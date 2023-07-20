@@ -467,7 +467,7 @@ def pipeline_multi_class(args, valid=False):
             if args['method'] == 'lwf':
                 train_func(train_loader, loss_criterion, tid, args, prev_model)
             elif args['method'] == 'jointtrain' and args['clsIL'] == False:
-                train_func(train_loader, loss_criterion, tid, args, train_loader_joint)
+                train_func(train_loader_joint, loss_criterion, tid, args)
             else:
                 train_func(train_loader, loss_criterion, tid, args)
 

@@ -80,7 +80,7 @@ class NET(torch.nn.Module):
         
         #train_score = np.mean(train_meter.compute_metric(args['metric_name']))
 
-    def observe_tskIL_multicls(self, data_loader, loss_criterion, task_i, args, train_loader_joint):
+    def observe_tskIL_multicls(self, train_loader_joint, loss_criterion, task_i, args):
         """
                                 The method for learning the given tasks under the task-IL setting with multi-class classification datasets.
 
