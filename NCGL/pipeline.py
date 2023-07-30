@@ -142,7 +142,10 @@ def pipeline_task_IL_no_inter_edge(args, valid=False):
             else:
                 life_model_ins.observe_task_IL(args, subgraph, features, labels, task, train_ids, ids_per_cls, dataset)
         if not valid:
-            model = pickle.load(open(save_model_path,'rb')).cuda(args.gpu)
+            try:
+                model = pickle.load(open(save_model_path,'rb')).cuda(args.gpu)
+            except:
+                model.load_state_dict(torch.load(save_model_path.replace('.pkl','.pt')))
         acc_mean = []
         for t in range(task + 1):
             subgraph, ids_per_cls, [train_ids, valid_ids_, test_ids_] = pickle.load(open(
@@ -173,8 +176,11 @@ def pipeline_task_IL_no_inter_edge(args, valid=False):
         print()
         if valid:
             mkdir_if_missing(f'{args.result_path}/{subfolder_c}/val_models')
-            with open(save_model_path, 'wb') as f:
-                pickle.dump(model, f)  # save the best model for each hyperparameter composition
+            try:
+                with open(save_model_path, 'wb') as f:
+                    pickle.dump(model, f) # save the best model for each hyperparameter composition
+            except:
+                torch.save(model.state_dict(), save_model_path.replace('.pkl','.pt'))  # save the best model for each hyperparameter composition
         prev_model = copy.deepcopy(model).cuda(args.gpu)
 
     print('AP: ', acc_mean)
@@ -241,7 +247,10 @@ def pipeline_task_IL_inter_edge(args, valid=False):
                                                ids_per_cls_current_task, dataset)
         # test
         if not valid:
-            model = pickle.load(open(save_model_path,'rb')).cuda(args.gpu)
+            try:
+                model = pickle.load(open(save_model_path,'rb')).cuda(args.gpu)
+            except:
+                model.load_state_dict(torch.load(save_model_path.replace('.pkl','.pt')))
         acc_mean = []
         for t in range(task + 1):
             cls_ids_new = [cls_retain.index(i) for i in args.task_seq[t]]
@@ -269,8 +278,11 @@ def pipeline_task_IL_inter_edge(args, valid=False):
         print()
         if valid:
             mkdir_if_missing(f'{args.result_path}/{subfolder_c}/val_models')
-            with open(save_model_path, 'wb') as f:
-                pickle.dump(model, f)
+            try:
+                with open(save_model_path, 'wb') as f:
+                    pickle.dump(model, f) # save the best model for each hyperparameter composition
+            except:
+                torch.save(model.state_dict(), save_model_path.replace('.pkl','.pt'))
         prev_model = copy.deepcopy(model).cuda()
 
     print('AP: ', acc_mean)
@@ -325,7 +337,10 @@ def pipeline_task_IL_no_inter_edge_joint(args, valid=False):
             life_model_ins.observe_task_IL(args, subgraphs, featuress, labelss, task, train_idss, ids_per_clss, dataset)
 
         if not valid:
-            model = pickle.load(open(save_model_path,'rb')).cuda(args.gpu)
+            try:
+                model = pickle.load(open(save_model_path,'rb')).cuda(args.gpu)
+            except:
+                model.load_state_dict(torch.load(save_model_path.replace('.pkl','.pt')))
         acc_mean = []
         for t in range(task + 1):
             subgraph, ids_per_cls, [train_ids, valid_ids_, test_ids_] = pickle.load(open(
@@ -355,8 +370,11 @@ def pipeline_task_IL_no_inter_edge_joint(args, valid=False):
         print()
         if valid:
             mkdir_if_missing(f'{args.result_path}/{subfolder_c}/val_models')
-            with open(save_model_path, 'wb') as f:
-                pickle.dump(model, f)
+            try:
+                with open(save_model_path, 'wb') as f:
+                    pickle.dump(model, f) # save the best model for each hyperparameter composition
+            except:
+                torch.save(model.state_dict(), save_model_path.replace('.pkl','.pt'))
 
     print('AP: ', acc_mean)
     backward = []
@@ -418,7 +436,10 @@ def pipeline_task_IL_inter_edge_joint(args, valid=False):
             life_model_ins.observe_task_IL_crsedge(args, subgraphs, featuress, labelss, task, train_idss, ids_per_clss_all, dataset)
 
         if not valid:
-            model = pickle.load(open(save_model_path,'rb')).cuda(args.gpu)
+            try:
+                model = pickle.load(open(save_model_path,'rb')).cuda(args.gpu)
+            except:
+                model.load_state_dict(torch.load(save_model_path.replace('.pkl','.pt')))
         acc_mean = []
         for t, temp in enumerate(args.task_seq[0:task+1]):
             # cls_ids_new = args.task_seq[t]
@@ -449,8 +470,11 @@ def pipeline_task_IL_inter_edge_joint(args, valid=False):
         print()
         if valid:
             mkdir_if_missing(f'{args.result_path}/{subfolder_c}/val_models')
-            with open(save_model_path, 'wb') as f:
-                pickle.dump(model, f)
+            try:
+                with open(save_model_path, 'wb') as f:
+                    pickle.dump(model, f) # save the best model for each hyperparameter composition
+            except:
+                torch.save(model.state_dict(), save_model_path.replace('.pkl','.pt'))
 
     print('AP: ', acc_mean)
     backward = []
@@ -502,7 +526,10 @@ def pipeline_class_IL_no_inter_edge(args, valid=False):
                 torch.cuda.empty_cache()
 
         if not valid:
-            model = pickle.load(open(save_model_path,'rb')).cuda(args.gpu)
+            try:
+                model = pickle.load(open(save_model_path,'rb')).cuda(args.gpu)
+            except:
+                model.load_state_dict(torch.load(save_model_path.replace('.pkl','.pt')))
         acc_mean = []
         # test
         for t in range(task+1):
@@ -529,8 +556,11 @@ def pipeline_class_IL_no_inter_edge(args, valid=False):
         print()
         if valid:
             mkdir_if_missing(f'{args.result_path}/{subfolder_c}/val_models')
-            with open(save_model_path, 'wb') as f:
-                pickle.dump(model, f)
+            try:
+                with open(save_model_path, 'wb') as f:
+                    pickle.dump(model, f) # save the best model for each hyperparameter composition
+            except:
+                torch.save(model.state_dict(), save_model_path.replace('.pkl','.pt'))
         prev_model = copy.deepcopy(model).cuda()
 
     print('AP: ', acc_mean)
@@ -598,7 +628,10 @@ def pipeline_class_IL_inter_edge(args, valid=False):
         # test
         label_offset1, label_offset2 = task_manager.get_label_offset(task)
         if not valid:
-            model = pickle.load(open(save_model_path,'rb')).cuda(args.gpu)
+            try:
+                model = pickle.load(open(save_model_path,'rb')).cuda(args.gpu)
+            except:
+                model.load_state_dict(torch.load(save_model_path.replace('.pkl','.pt')))
         acc_mean = []
         for t in range(task + 1):
             cls_ids_new = [cls_retain.index(i) for i in args.task_seq[t]]
@@ -624,8 +657,11 @@ def pipeline_class_IL_inter_edge(args, valid=False):
         print()
         if valid:
             mkdir_if_missing(f'{args.result_path}/{subfolder_c}/val_models')
-            with open(save_model_path, 'wb') as f:
-                pickle.dump(model, f)
+            try:
+                with open(save_model_path, 'wb') as f:
+                    pickle.dump(model, f) # save the best model for each hyperparameter composition
+            except:
+                torch.save(model.state_dict(), save_model_path.replace('.pkl','.pt'))
         prev_model = copy.deepcopy(model).cuda()
 
     print('AP: ', acc_mean)
@@ -681,7 +717,10 @@ def pipeline_class_IL_no_inter_edge_joint(args, valid=False):
 
         label_offset1, label_offset2 = task_manager.get_label_offset(task)
         if not valid:
-            model = pickle.load(open(save_model_path,'rb')).cuda(args.gpu)
+            try:
+                model = pickle.load(open(save_model_path,'rb')).cuda(args.gpu)
+            except:
+                model.load_state_dict(torch.load(save_model_path.replace('.pkl','.pt')))
         acc_mean = []
         for t in range(task + 1):
             subgraph, ids_per_cls, [train_ids, valid_ids_, test_ids_] = pickle.load(open(
@@ -709,8 +748,11 @@ def pipeline_class_IL_no_inter_edge_joint(args, valid=False):
         print()
         if valid:
             mkdir_if_missing(f'{args.result_path}/{subfolder_c}/val_models')
-            with open(save_model_path, 'wb') as f:
-                pickle.dump(model, f)
+            try:
+                with open(save_model_path, 'wb') as f:
+                    pickle.dump(model, f) # save the best model for each hyperparameter composition
+            except:
+                torch.save(model.state_dict(), save_model_path.replace('.pkl','.pt'))
 
     print('AP: ', acc_mean)
     backward = []
@@ -767,7 +809,10 @@ def pipeline_class_IL_inter_edge_joint(args, valid=False):
             life_model_ins.observe_class_IL_crsedge(args, subgraph, features, labels, task, train_ids, ids_per_cls_all, dataset)
 
         if not valid:
-            model = pickle.load(open(save_model_path,'rb')).cuda(args.gpu)
+            try:
+                model = pickle.load(open(save_model_path,'rb')).cuda(args.gpu)
+            except:
+                model.load_state_dict(torch.load(save_model_path.replace('.pkl','.pt')))
         acc_mean = []
         label_offset1, label_offset2 = task_manager.get_label_offset(task)
         for t, cls_ids_new in enumerate(args.task_seq[0:task+1]):
@@ -797,8 +842,11 @@ def pipeline_class_IL_inter_edge_joint(args, valid=False):
         print()
         if valid:
             mkdir_if_missing(f'{args.result_path}/{subfolder_c}/val_models')
-            with open(save_model_path, 'wb') as f:
-                pickle.dump(model, f)
+            try:
+                with open(save_model_path, 'wb') as f:
+                    pickle.dump(model, f) # save the best model for each hyperparameter composition
+            except:
+                torch.save(model.state_dict(), save_model_path.replace('.pkl','.pt'))
 
     print('AP: ', acc_mean)
     backward = []
@@ -859,7 +907,10 @@ def pipeline_task_IL_no_inter_edge_minibatch(args, valid=False):
 
         # test
         if not valid:
-            model = pickle.load(open(save_model_path,'rb')).cuda(args.gpu)
+            try:
+                model = pickle.load(open(save_model_path,'rb')).cuda(args.gpu)
+            except:
+                model.load_state_dict(torch.load(save_model_path.replace('.pkl','.pt')))
         acc_mean = []
         for t in range(task + 1):
             subgraph, ids_per_cls, [train_ids, valid_ids_, test_ids_] = pickle.load(open(
@@ -883,8 +934,11 @@ def pipeline_task_IL_no_inter_edge_minibatch(args, valid=False):
         print()
         if valid:
             mkdir_if_missing(f'{args.result_path}/{subfolder_c}/val_models')
-            with open(save_model_path, 'wb') as f:
-                pickle.dump(model, f)
+            try:
+                with open(save_model_path, 'wb') as f:
+                    pickle.dump(model, f) # save the best model for each hyperparameter composition
+            except:
+                torch.save(model.state_dict(), save_model_path.replace('.pkl','.pt'))
         prev_model = copy.deepcopy(model).cuda()
 
     print('AP: ', acc_mean)
@@ -952,7 +1006,10 @@ def pipeline_task_IL_no_inter_edge_minibatch_joint(args, valid=False):
             life_model_ins.observe_task_IL_batch(args, subgraphs, dataloader, featuress, labelss, task, train_idss, ids_per_clss, dataset)
 
         if not valid:
-            model = pickle.load(open(save_model_path,'rb')).cuda(args.gpu)
+            try:
+                model = pickle.load(open(save_model_path,'rb')).cuda(args.gpu)
+            except:
+                model.load_state_dict(torch.load(save_model_path.replace('.pkl','.pt')))
         acc_mean = []
         for t in range(task + 1):
             subgraph, ids_per_cls, [train_ids, valid_ids_, test_ids_] = pickle.load(open(f'{args.data_path}/no_inter_tsk_edge/{args.dataset}_{args.task_seq[t]}.pkl', 'rb'))
@@ -981,8 +1038,11 @@ def pipeline_task_IL_no_inter_edge_minibatch_joint(args, valid=False):
         print()
         if valid:
             mkdir_if_missing(f'{args.result_path}/{subfolder_c}/val_models')
-            with open(save_model_path, 'wb') as f:
-                pickle.dump(model, f)
+            try:
+                with open(save_model_path, 'wb') as f:
+                    pickle.dump(model, f) # save the best model for each hyperparameter composition
+            except:
+                torch.save(model.state_dict(), save_model_path.replace('.pkl','.pt'))
 
     print('AP: ', acc_mean)
     backward = []
@@ -1047,7 +1107,10 @@ def pipeline_class_IL_no_inter_edge_minibatch_joint(args, valid=False):
             life_model_ins.observe_class_IL_batch(args, subgraphs, dataloader, featuress, labelss, task, train_idss, ids_per_clss, dataset)
 
         if not valid:
-            model = pickle.load(open(save_model_path,'rb')).cuda(args.gpu)
+            try:
+                model = pickle.load(open(save_model_path,'rb')).cuda(args.gpu)
+            except:
+                model.load_state_dict(torch.load(save_model_path.replace('.pkl','.pt')))
         acc_mean = []
         label_offset1, label_offset2 = task_manager.get_label_offset(task)
         for t in range(task + 1):
@@ -1076,8 +1139,11 @@ def pipeline_class_IL_no_inter_edge_minibatch_joint(args, valid=False):
         print()
         if valid:
             mkdir_if_missing(f'{args.result_path}/{subfolder_c}/val_models')
-            with open(save_model_path, 'wb') as f:
-                pickle.dump(model, f)
+            try:
+                with open(save_model_path, 'wb') as f:
+                    pickle.dump(model, f) # save the best model for each hyperparameter composition
+            except:
+                torch.save(model.state_dict(), save_model_path.replace('.pkl','.pt'))
 
     print('AP: ', acc_mean)
     backward = []
@@ -1139,7 +1205,10 @@ def pipeline_class_IL_no_inter_edge_minibatch(args, valid=False):
         label_offset1, label_offset2 = task_manager.get_label_offset(task)
         # test
         if not valid:
-            model = pickle.load(open(save_model_path,'rb')).cuda(args.gpu)
+            try:
+                model = pickle.load(open(save_model_path,'rb')).cuda(args.gpu)
+            except:
+                model.load_state_dict(torch.load(save_model_path.replace('.pkl','.pt')))
         acc_mean = []
         for t in range(task + 1):
             subgraph, ids_per_cls, [train_ids, valid_ids_, test_ids_] = pickle.load(open(f'{args.data_path}/no_inter_tsk_edge/{args.dataset}_{args.task_seq[t]}.pkl', 'rb'))
@@ -1161,8 +1230,11 @@ def pipeline_class_IL_no_inter_edge_minibatch(args, valid=False):
         print()
         if valid:
             mkdir_if_missing(f'{args.result_path}/{subfolder_c}/val_models')
-            with open(save_model_path, 'wb') as f:
-                pickle.dump(model, f)
+            try:
+                with open(save_model_path, 'wb') as f:
+                    pickle.dump(model, f) # save the best model for each hyperparameter composition
+            except:
+                torch.save(model.state_dict(), save_model_path.replace('.pkl','.pt'))
         prev_model = copy.deepcopy(model).cuda()
 
     print('AP: ', acc_mean)
@@ -1232,7 +1304,10 @@ def pipeline_task_IL_inter_edge_minibatch(args, valid=False):
 
         # test
         if not valid:
-            model = pickle.load(open(save_model_path,'rb')).cuda(args.gpu)
+            try:
+                model = pickle.load(open(save_model_path,'rb')).cuda(args.gpu)
+            except:
+                model.load_state_dict(torch.load(save_model_path.replace('.pkl','.pt')))
         acc_mean = []
         for t in range(task + 1):
             cls_ids_new = [cls_retain.index(i) for i in args.task_seq[t]]
@@ -1260,8 +1335,11 @@ def pipeline_task_IL_inter_edge_minibatch(args, valid=False):
         print()
         if valid:
             mkdir_if_missing(f'{args.result_path}/{subfolder_c}/val_models')
-            with open(save_model_path, 'wb') as f:
-                pickle.dump(model, f)
+            try:
+                with open(save_model_path, 'wb') as f:
+                    pickle.dump(model, f) # save the best model for each hyperparameter composition
+            except:
+                torch.save(model.state_dict(), save_model_path.replace('.pkl','.pt'))
         prev_model = copy.deepcopy(model).cuda()
 
     print('AP: ', acc_mean)
@@ -1322,7 +1400,10 @@ def pipeline_task_IL_inter_edge_minibatch_joint(args, valid=False):
             life_model_ins.observe_task_IL_batch(args, subgraph, dataloader, features, labels, task, train_ids, ids_per_cls_all, dataset)
 
         if not valid:
-            model = pickle.load(open(save_model_path,'rb')).cuda(args.gpu)
+            try:
+                model = pickle.load(open(save_model_path,'rb')).cuda(args.gpu)
+            except:
+                model.load_state_dict(torch.load(save_model_path.replace('.pkl','.pt')))
         acc_mean = []
         for t, cls_ids_new in enumerate(args.task_seq[0:task+1]):
             #cls_ids_new = args.task_seq[t]
@@ -1352,8 +1433,11 @@ def pipeline_task_IL_inter_edge_minibatch_joint(args, valid=False):
         print()
         if valid:
             mkdir_if_missing(f'{args.result_path}/{subfolder_c}/val_models')
-            with open(save_model_path, 'wb') as f:
-                pickle.dump(model, f)
+            try:
+                with open(save_model_path, 'wb') as f:
+                    pickle.dump(model, f) # save the best model for each hyperparameter composition
+            except:
+                torch.save(model.state_dict(), save_model_path.replace('.pkl','.pt'))
 
     print('AP: ', acc_mean)
     backward = []
@@ -1422,7 +1506,10 @@ def pipeline_class_IL_inter_edge_minibatch(args, valid=False):
         # test
         label_offset1, label_offset2 = task_manager.get_label_offset(task)
         if not valid:
-            model = pickle.load(open(save_model_path,'rb')).cuda(args.gpu)
+            try:
+                model = pickle.load(open(save_model_path,'rb')).cuda(args.gpu)
+            except:
+                model.load_state_dict(torch.load(save_model_path.replace('.pkl','.pt')))
         acc_mean = []
         for t in range(task + 1):
             cls_ids_new = [cls_retain.index(i) for i in args.task_seq[t]]
@@ -1448,8 +1535,11 @@ def pipeline_class_IL_inter_edge_minibatch(args, valid=False):
         print()
         if valid:
             mkdir_if_missing(f'{args.result_path}/{subfolder_c}/val_models')
-            with open(save_model_path, 'wb') as f:
-                pickle.dump(model, f)
+            try:
+                with open(save_model_path, 'wb') as f:
+                    pickle.dump(model, f) # save the best model for each hyperparameter composition
+            except:
+                torch.save(model.state_dict(), save_model_path.replace('.pkl','.pt'))
         prev_model = copy.deepcopy(model).cuda()
 
     print('AP: ', acc_mean)
@@ -1507,7 +1597,10 @@ def pipeline_class_IL_inter_edge_minibatch_joint(args, valid=False):
             life_model_ins.observe_class_IL_batch(args, subgraph, dataloader, features, labels, task, train_ids, ids_per_cls_all, dataset)
 
         if not valid:
-            model = pickle.load(open(save_model_path,'rb')).cuda(args.gpu)
+            try:
+                model = pickle.load(open(save_model_path,'rb')).cuda(args.gpu)
+            except:
+                model.load_state_dict(torch.load(save_model_path.replace('.pkl','.pt')))
         acc_mean = []
         label_offset1, label_offset2 = task_manager.get_label_offset(task)
         test_ids = valid_ids_ if valid else test_ids_ # whether use validation or test set
@@ -1538,8 +1631,11 @@ def pipeline_class_IL_inter_edge_minibatch_joint(args, valid=False):
         print()
         if valid:
             mkdir_if_missing(f'{args.result_path}/{subfolder_c}/val_models')
-            with open(save_model_path, 'wb') as f:
-                pickle.dump(model, f)
+            try:
+                with open(save_model_path, 'wb') as f:
+                    pickle.dump(model, f) # save the best model for each hyperparameter composition
+            except:
+                torch.save(model.state_dict(), save_model_path.replace('.pkl','.pt'))
 
     print('AP: ', acc_mean)
     backward = []
