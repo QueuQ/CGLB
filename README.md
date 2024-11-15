@@ -4,7 +4,7 @@
 
  <tr><td colspan="4"> <a href="#Get-Started">Get Started</a></td></tr> | <tr><td colspan="4"> <a href="#Dataset-Usages">Dataset Usages</a></td></tr> | <tr><td colspan="4"> <a href="#Pipeline-Usages">Pipeline Usages</a></td></tr> | <tr><td colspan="4"> <a href="#Evaluation-and-Visualization-Toolkit">Evaluation & Visualization Toolkit</a></td></tr> | <tr><td colspan="4"> <a href="#Benchmarks"> Benchmarks </a></td></tr> | <tr><td colspan="4"> <a href="#Acknowledgement"> Acknowledgement </a></td></tr>
 
- This is the official repository of Continual Graph Learning Benchmark (CGLB), which was published in the datasets and benchmarks track of NeurIPS 2022 [(paper link)](https://openreview.net/forum?id=5wNiiIDynDF). We will keep maintaining this repository to faciliate the development of continual graph learning, and we appreciate any comment on improving our CGLB!
+ This is the official repository of Continual Graph Learning Benchmark (CGLB), which was published in the datasets and benchmarks track of NeurIPS 2022 [(paper link)](https://openreview.net/forum?id=5wNiiIDynDF). We will keep maintaining this repository to facilitate the development of continual graph learning, and we appreciate any comment on improving our CGLB!
 
  ```
  @inproceedings{zhang2022cglb,
@@ -18,7 +18,7 @@
 
  ## Get Started
  
- This repository contains our CGLB implemented for running on GPU devices. To running in Windows system, please specify the argument ```--replace_illegal_char``` as ```True``` to avoid illegal filename characters (details are in <a href="#Pipeline-Usages">Pipeline Usages</a>). To run the code, the following packages are required to be installed:
+ This repository contains our CGLB implemented for running on GPU devices. To run in the Windows system, please specify the argument ```--replace_illegal_char``` as ```True``` to avoid illegal filename characters (details are in <a href="#Pipeline-Usages">Pipeline Usages</a>). To run the code, the following packages are required to be installed:
  
 * python==3.7.10
 * scipy==1.5.2
@@ -70,11 +70,11 @@ For GCGL tasks, the following packages are also required:
  
  ### Data Structures and Formats
  
- An instance of the ```NodeLevelDataset``` has multiple attributes and methods. ```dataset.d_data```, ```dataset.n_cls```, and ```dataset.n_nodes``` denotes the number of dimensions of the node features, number of classes of the corresponding dataset, and the number of nodes in the corresponding dataset, respectively. ```dataset.graph``` is the entire graph of the corresponding dataset without being divided. The data type of ```dataset.graph``` is the [DGL graph](https://docs.dgl.ai/tutorials/blitz/index.html). ```dataset.labels``` contains the label of every node of ```dataset.graph```. ```dataset.tr_va_te_split``` is a dictionary containing the splitting of each class for training, validation, and test.
+ An instance of the ```NodeLevelDataset``` has multiple attributes and methods. ```dataset.d_data```, ```dataset.n_cls```, and ```dataset.n_nodes``` denotes the number of dimensions of the node features, the number of classes of the corresponding dataset, and the number of nodes in the corresponding dataset, respectively. ```dataset.graph``` is the entire graph of the corresponding dataset without being divided. The data type of ```dataset.graph``` is the [DGL graph](https://docs.dgl.ai/tutorials/blitz/index.html). ```dataset.labels``` contains the label of every node of ```dataset.graph```. ```dataset.tr_va_te_split``` is a dictionary containing the splitting of each class for training, validation, and testing.
  
- ```dataset.get_graph()``` is a most useful method which returns a subgraph of ```dataset.graph``` (for constructing the continual learning task sequence) with the given classes or node indices to retain. There are three keyword arguments for ```dataset.get_graph()``` including ```classes_to_retain```, ```node_ids```, and ```remove_edges```. ```classes_to_retain``` is used to specify which classes of the ```dataset.graph``` to retain in the returned subgraph. ```node_ids``` is used to specify specific nodes to retain. If both ```classes_to_retain``` and ```node_ids``` are specified, their corresponding subgraphs will be separately generated and then combined into one graph. ```remove_edges``` is specifically for removing the edges of the subgraph generated from the specified ```node_ids```. One possible usage of this argument is to select and output the nodes to store for the memory based baseline ER-GNN.
+ ```dataset.get_graph()``` is a most useful method that returns a subgraph of ```dataset.graph``` (for constructing the continual learning task sequence) with the given classes or node indices to retain. There are three keyword arguments for ```dataset.get_graph()``` including ```classes_to_retain```, ```node_ids```, and ```remove_edges```. ```classes_to_retain``` is used to specify which classes of the ```dataset.graph``` to retain in the returned subgraph. ```node_ids``` is used to specify specific nodes to retain. If both ```classes_to_retain``` and ```node_ids``` are specified, their corresponding subgraphs will be separately generated and then combined into one graph. ```remove_edges``` is specifically for removing the edges of the subgraph generated from the specified ```node_ids```. One possible usage of this argument is to select and output the nodes to store for the memory-based baseline ER-GNN.
  
- The usage of the G-CGL dataset resembles the classic continual learning. An instance of ```GraphLevelDataset``` consists of four components. ```dataset.dataset``` is the original dataset before being divided. ```train_set, val_set, test_set``` are the splittings for training, validation, and test. For the task-IL datasets ```SIDER-tIL``` and ```Tox21-tIL```, the original datasets are multi-label ones, and the splitting is simply splitting the dataset into three parts according the given ratios. While for the ```Aromaticity-CL``` whose original dataset is a multi-class one, the splitting is also done for each class like the N-CGL datasets. As a result, for ```Aromaticity-CL```, each of ```train_set```, ```val_set```, and ```test_set``` is a list containing the splitting of each class. 
+ The usage of the G-CGL dataset resembles classic continual learning. An instance of ```GraphLevelDataset``` consists of four components. ```dataset.dataset``` is the original dataset before being divided. ```train_set, val_set, test_set``` are the splittings for training, validation, and testing. For the task-IL datasets ```SIDER-tIL``` and ```Tox21-tIL```, the original datasets are multi-label ones, and the splitting is simply splitting the dataset into three parts according to the given ratios. While for the ```Aromaticity-CL``` whose original dataset is a multi-class one, the splitting is also done for each class like the N-CGL datasets. As a result, for ```Aromaticity-CL```, each of ```train_set```, ```val_set```, and ```test_set``` is a list containing the splitting of each class. 
  
  ## Pipeline Usages
  
@@ -82,7 +82,7 @@ For GCGL tasks, the following packages are also required:
  ### N-CGL
  Below is the example to run the 'Bare model' baseline with GCN backbone on the Arxiv-CL dataset under the task-IL scenario. 
  
- For both N-CGL and G-CGL experiments, the starting point is the ```train.py``` file, and the different configurations (e.g. the baseline, backbone, learning scenario (task-IL or class-IL), whether to include inter task edges, etc.) are assigned through the keyword arguments of the Argparse module. For example, to run the N-CGL experiments without inter-task edge under the task-IL scenario, the following code is to be used.
+ For both N-CGL and G-CGL experiments, the starting point is the ```train.py``` file, and the different configurations (e.g. the baseline, backbone, learning scenario (task-IL or class-IL), whether to include inter-task edges, etc.) are assigned through the keyword arguments of the Argparse module. For example, to run the N-CGL experiments without inter-task edge under the task-IL scenario, the following code is to be used.
  
  ```
  python train.py --dataset Arxiv-CL \
@@ -94,7 +94,7 @@ For GCGL tasks, the following packages are also required:
         --minibatch False \
  ```
 
-For the baselines with tunable hyper-parameters, our framework provide a convenient way to do grid search over candidate combinations of hyper-parameters. For example, the baseline GEM has two tunable hyper-parameters ```memory_strength``` and ```n_memories```. If the candidate ```memory_strength``` and ```n_memories``` are ```[0.05,0.5,5]``` and ```[10,100,1000]```, respectively, then the command to validate every possible hyper-parameter combination over the validation and test the chosen optimal model on the testing set is as follows:
+For the baselines with tunable hyper-parameters, our framework provide a convenient way to do a grid search over candidate combinations of hyper-parameters. For example, the baseline GEM has two tunable hyper-parameters ```memory_strength``` and ```n_memories```. If the candidate ```memory_strength``` and ```n_memories``` are ```[0.05,0.5,5]``` and ```[10,100,1000]```, respectively, then the command to validate every possible hyper-parameter combination over the validation and test the chosen optimal model on the testing set is as follows:
 ```
 python train.py --dataset Arxiv-CL \
        --gem_args " 'memory_strength': [0.05,0.5,5]; 'n_memories': [10,100,1000] " \
@@ -105,7 +105,7 @@ python train.py --dataset Arxiv-CL \
        --inter-task-edges $inter \
        --epochs $n_epochs \
 ```
-Some rules to note are: 1. The entire argument ```" 'memory_strength': [0.05,0.5,5]; 'n_memories': [10,100,1000] "``` requires double quotes ``` '' ``` around it. 2. Semicolon ```;``` is required to separate different parameters. 3. Brackets are used to wrap the hyper-parameter candidates. 4. Comma is used to separate the hyper-parameter candidates.
+Some rules to note are: 1. The entire argument ```" 'memory_strength': [0.05,0.5,5]; 'n_memories': [10,100,1000] "``` requires double quotes ``` '' ``` around it. 2. Semicolon ```;``` is required to separate different parameters. 3. Brackets are used to wrap the hyper-parameter candidates. 4. A comma is used to separate the hyper-parameter candidates.
 In the example above, all possible nine (three choices for ```memory_strength``` and three choices for ```n_memories```) combinations will be used to set the hyper-parameters.
 
 Since the graphs in N-CGL can be too large to be processed in one batch on most devices, the ```--minibatch``` argument could be specified to be ```True``` for training with the large graphs in mini-batches.
@@ -124,7 +124,7 @@ Since the graphs in N-CGL can be too large to be processed in one batch on most 
 In the above example, besides specifying the ```--minibatch```, the size of each mini-batch is also specified through ```--batch_size```. Moreover, some graphs are extremely dense and will run out the memory even with mini-batch training, which could be addressed through the neighborhood sampling specified via ```--sample_nbs```. And the number of neighbors to sample for each hop is specified through ```--n_nbs_sample```.
 There are also other customizable arguments, the full list of which can be found in ```train.py```.
 
-When running the code in Windows system, the following error **OSError: [Errno 22] Invalid argument** may be triggered and could be avoided by specifying the argument ```--replace_illegal_char``` as ```True``` to replace the potential illegal characters with the underscore symbol ```_```. For example,
+When running the code in the Windows system, the following error **OSError: [Errno 22] Invalid argument** may be triggered and could be avoided by specifying the argument ```--replace_illegal_char``` as ```True``` to replace the potential illegal characters with the underscore symbol ```_```. For example,
  ```
  python train.py --dataset Arxiv-CL \
         --method bare \
@@ -156,7 +156,7 @@ The example above set the data ratio for validation and testing as 0.4 and 0.4, 
 ### Implementing New Methods 
 
 New continual graph learning methods can also be easily implemented in our highly modularized pipelines. 
-The newly implemented method should be contained in a python script file under the directory ```CGLB/NCGL/Baselines```. Suppose we are implementing a method named A, then an ```CGLB/NCGL/Baselines/A_model.py``` containing the implementation of the method should be created. The implementation is flexible as long as it satisfies the input format. Specifically, the python class of the new method should contain an *observe()* function for model training on a single task, whose input include the task configurations and the data. Details on the input format could be found in any ```xxx_model.py``` file under the directory ```CGLB/NCGL/Baselines```.
+The newly implemented method should be contained in a Python script file under the directory ```CGLB/NCGL/Baselines```. Suppose we are implementing a method named A, then an ```CGLB/NCGL/Baselines/A_model.py``` containing the implementation of the method should be created. The implementation is flexible as long as it satisfies the input format. Specifically, the Python class of the new method should contain an *observe()* function for model training on a single task, whose input includes the task configurations and the data. Details on the input format could be found in any ```xxx_model.py``` file under the directory ```CGLB/NCGL/Baselines```.
 
 ### G-CGL
  Below is an example for running the 'Bare model' baseline with GCN backbone on the SIDER-tIL dataset under the task-IL scenario. 
@@ -170,7 +170,7 @@ The newly implemented method should be contained in a python script file under t
 
  
  ## Evaluation and Visualization Toolkit
- We provide three protocols to evaluate the obtained results as follows. With out pipeline, the results are uniformly stored in the form of performance matrix, which can be directly fed into our evaluation toolkit.
+ We provide three protocols to evaluate the obtained results as follows. With out pipeline, the results are uniformly stored in the form of a performance matrix, which can be directly fed into our evaluation toolkit.
  
  ### 1. Visualization of the Performance Matrix
  
@@ -194,7 +194,7 @@ The newly implemented method should be contained in a python script file under t
  from CGLB.NCGL.visualize import shown_final_APAF
  shown_final_APAF("result_path")
  ```
- The outputs with standard deviation are in LaTex form for making it easy to be copied and pasted into a LaTex table.
+ The outputs with standard deviation are in LaTex form making it easy to copy and paste into a LaTex table.
  
  
  ## Benchmarks
